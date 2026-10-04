@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { normalizeOpenSkyStates } from "@/lib/opensky";
 
 const EPWR = {
   lat: 51.1107,
@@ -48,11 +49,13 @@ export async function GET() {
 
     const data = await response.json();
 
+    const aircraft = normalizeOpenSkyStates(data.states ?? []);
+
     return NextResponse.json({
       source: "OpenSky",
       timestamp: data.time,
-      count: data.states?.length ?? 0,
-      states: data.states ?? [],
+      count: aircraft.length,
+      aircraft,
     });
   } catch (error) {
     console.error("OpenSky error:", error);
